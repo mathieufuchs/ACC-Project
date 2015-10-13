@@ -1,0 +1,20 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+packages:
+    - git
+    - python-pip
+    - python-swiftclient
+    - rabbitmq-server
+    - gmsh
+
+runcmd:
+    - pip install Flask
+    - mkdir /home/ubuntu/msh
+    - mkdir /home/ubuntu/geo
+    - git clone https://github.com/mathieufuchs/naca_airfoil.git
+    - mv naca_airfoil home/ubuntu/naca_airfoil
+    - chmod -R 777 home/ubuntu/naca_airfoil
+    - pip install celery
