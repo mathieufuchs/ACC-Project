@@ -1,0 +1,23 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+apt_sources:
+    - source: "ppa:fenics-packages/fenics"
+
+packages:
+    - git
+    - python-pip
+    - rabbitmq-server
+    - gmsh
+    - python-numpy
+    - fenics
+
+runcmd:
+    - git clone https://github.com/mathieufuchs/naca_airfoil.git
+    - mv naca_airfoil home/ubuntu/naca_airfoil
+    - chown -R ubuntu home/ubuntu/naca_airfoil
+    - pip install celery
+    - cd /home/ubuntu/naca_airfoil
+    - sudo -H -u ubuntu bash -c "celery worker -A tasks --concurrency=1 &"

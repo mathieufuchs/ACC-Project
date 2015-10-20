@@ -3,18 +3,32 @@
 package_update: true
 package_upgrade: true
 
+
+apt_sources:
+    - source: "ppa:fenics-packages/fenics"
+
 packages:
     - git
     - python-pip
     - python-swiftclient
     - rabbitmq-server
     - gmsh
+    - python-numpy
+    - fenics
 
 runcmd:
     - pip install Flask
-    - mkdir /home/ubuntu/msh
-    - mkdir /home/ubuntu/geo
     - git clone https://github.com/mathieufuchs/naca_airfoil.git
     - mv naca_airfoil home/ubuntu/naca_airfoil
-    - chmod -R 777 home/ubuntu/naca_airfoil
+    - sudo -H -u ubuntu bash -c "chown -R ubuntu home/ubuntu/naca_airfoil"
+    - mkdir /home/ubuntu/naca_airfoil/msh
+    - mkdir /home/ubuntu/naca_airfoil/geo
     - pip install celery
+    - pip install flower
+    - sudo rabbitmqctl add_user ma fu
+    - sudo rabbitmqctl add_vhost mafu
+    - sudo rabbitmqctl set_permissions -p mafu ma ".*" ".*" ".*"
+    - cd home/ubuntu/naca_airfoil
+    - sudo -H -u ubuntu bash -c "python myServer.py &" 
+    - sudo -H -u ubuntu bash -c "celery worker -A tasks &" 
+    - sudo -H -u ubuntu bash -c "celery flower -A tasks &" 
